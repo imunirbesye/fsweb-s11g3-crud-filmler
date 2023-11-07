@@ -9,6 +9,7 @@ const EditMovieForm = (props) => {
 
   const { setMovies } = props;
   const [movie, setMovie] = useState({
+    id: "",
     title: "",
     director: "",
     genre: "",
@@ -42,7 +43,9 @@ const EditMovieForm = (props) => {
     <div className="bg-white rounded-md shadow flex-1">
       <form onSubmit={handleSubmit}>
         <div className="p-5 pb-3 border-b border-zinc-200">
-          <h4 className="text-xl font-bold">Düzenleniyor <strong>{movie.title}</strong></h4>
+          <h4 className="text-xl font-bold">
+            Düzenleniyor <strong>{movie.title}</strong>
+          </h4>
         </div>
 
         <div className="px-5 py-3">
