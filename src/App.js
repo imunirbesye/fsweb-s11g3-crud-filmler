@@ -9,10 +9,14 @@ import MovieHeader from "./components/MovieHeader";
 import FavoriteMovieList from "./components/FavoriteMovieList";
 import EditMovieForm from "./components/EditMovieForm";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
+import AddMovieForm from "./components/AddMovieForm";
 
 const App = (props) => {
   const [movies, setMovies] = useState([]);
   const [favoriteMovies, setFavoriteMovies] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     axios
@@ -25,14 +29,34 @@ const App = (props) => {
       });
   }, []);
 
-  const deleteMovie = (id) => {};
+  const deleteMovie = (id) => {
+    axios
+      .delete(`http://localhost:9000/api/movies/${id}`)
+      .then((res) => {
+        setMovies(res.data);
+        history.push("/movies");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-  const addToFavorites = (movie) => {};
+  const addToFavorites = (movie) => {
+    const oldMovies = favoriteMovies.find((item) => item.id === movie.id);
+    if (!oldMovies) {
+      setFavoriteMovies([...favoriteMovies, movie]);
+    }
+  };
+
+  const handleDarkModeChange = () => {
+    setDarkMode(!darkMode);
+  };
 
   return (
-    <div>
-      <nav className="bg-zinc-800 px-6 py-3">
+    <div className={darkMode && "dark bg-slate-900 h-screen"}>
+      <nav className="bg-zinc-800 px-6 py-3 dark:bg-gray-800">
         <h1 className="text-xl text-white">HTTP / CRUD Film Projesi</h1>
+        <button onClick={handleDarkModeChange}>Dark Mode Aç/Kapat</button>
       </nav>
 
       <div className="max-w-4xl mx-auto px-3 pb-4">
@@ -42,11 +66,16 @@ const App = (props) => {
 
           <Switch>
             <Route path="/movies/edit/:id">
-              <EditMovieForm />
+              <EditMovieForm setMovies={setMovies} />
             </Route>
-
+            <Route exact path="/movies/add">
+              <AddMovieForm setMovies={setMovies} />
+            </Route>
             <Route path="/movies/:id">
-              <Movie />
+              <Movie
+                deleteMovie={deleteMovie}
+                addToFavorites={addToFavorites}
+              />
             </Route>
 
             <Route path="/movies">
